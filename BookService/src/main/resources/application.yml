@@ -1,0 +1,59 @@
+server:
+  port: 8100
+  forward-headers-strategy: framework
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+spring:
+  application:
+    name: book-service
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/book_service?useTimezone=true&serverTimezone=UTC
+    username: root
+    password: gustavo10
+  jackson:
+    default-property-inclusion: NON_NULL
+    serialization:
+      fail-on-empty-beans: false
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  flyway:
+    url: jdbc:mysql://localhost:3306/
+    schemas: book_service
+    user: root
+    password: gustavo10
+  sleuth:
+    sampler:
+      probability: 1.0 #Rastreio de logs do sistema, 1.0 == 100%, 0.2 20%, o ideal para prod é 0.05 5%
+resilience4j:
+  retry:
+    instances:
+      default:
+        max-attempts: 4
+      foo-bar:
+        max-attempts: 5
+        wait-duration: 10s
+        enable-exponential-backoff: true
+  ratelimiter:
+    instances:
+      default:
+        limit-for-period: 2
+        limit-refresh-period: 10s
+  bulkhead:
+    instances:
+      default:
+        max-concurrent-calls: 10
+
+springdoc:
+  api-docs:
+    path: book-service/v3/api-docs
+  show-actuator: true
+  swagger-ui:
+    config-url: book-service/v3/api-docs/swagger-config
+    url: book-service/v3/api-docs
